@@ -9,7 +9,7 @@ def load_css(css_file):
         return f.read()
 
 
-def render_markdown(file_name, css_file="custom.css"):
+def render_markdown(file_name, css_file="static/custom.css"):
     readme_file = open(file_name, "r", encoding="utf-8")
 
     md_template_string = markdown.markdown(
