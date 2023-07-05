@@ -10,6 +10,7 @@
     <p>File name: {{ filename }}</p>
     <!-- TODO: REMOVE DEBUG INFO WHEN DONE -->
 
-    <img src="{{ url_for('static', filename='images/' + filename) }}" alt="Plot Image">
+    <!-- Note: I use Vercel to serve images in temporary storage -->
+    <img src="{{ url_for('serve_tmp_file', filename=filename) }}" alt="Plot Image">
 
 {% endblock %}
