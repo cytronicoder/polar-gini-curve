@@ -30,10 +30,6 @@ To use this tool:
 3. Use the included datasets for testing and validation.
 4. For custom datasets, ensure they conform to the input format outlined in the documentation.
 
-## Interactive Web Application
-
-For ease of use, researchers can interact with the PGC technique via a web application available at [www.pgc-app.com](http://www.pgc-app.com) (Note: This is a placeholder link and will be updated with the actual link in the near future).
-
 ## Contribution
 
 We welcome your contributions! Please review the contributing guidelines before getting started.

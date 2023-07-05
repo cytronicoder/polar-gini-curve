@@ -2,6 +2,8 @@ import markdown
 import markdown.extensions.fenced_code
 import markdown.extensions.codehilite
 from pygments.formatters import HtmlFormatter
+from flask import render_template
+import html
 
 
 def load_css(css_file):
@@ -9,7 +11,7 @@ def load_css(css_file):
         return f.read()
 
 
-def render_markdown(file_name, css_file="static/custom.css"):
+def render_markdown(file_name, template_name):
     readme_file = open(file_name, "r", encoding="utf-8")
 
     md_template_string = markdown.markdown(
@@ -20,8 +22,12 @@ def render_markdown(file_name, css_file="static/custom.css"):
     css_string = formatter.get_style_defs()
     md_css_string = "<style>" + css_string + "</style>"
 
-    custom_css = load_css(css_file)
-    custom_css_string = "<style>" + custom_css + "</style>"
+    # final_css = md_css_string + custom_css_string
+    # md_template_string = html.unescape(md_template_string)
+    # final_css = html.unescape(final_css)
 
-    md_template = md_css_string + custom_css_string + md_template_string
-    return md_template
+    md_template = md_css_string + md_template_string
+
+    return render_template(
+        template_name, content=md_template
+    )

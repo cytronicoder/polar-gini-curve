@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{{ content|safe }}
+
+<div>
+    <button id="uploadButton" data-url="{{ url_for('playground') }}">Test the app today</button>
+</div>
+
+<script>
+    document.getElementById('uploadButton').addEventListener('click', function() {
+        var url = this.getAttribute('data-url');
+        location.href = url;
+    });
+</script>
+
+{% endblock %}

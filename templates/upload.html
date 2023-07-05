@@ -4,8 +4,21 @@
 
 {% block content %}
     <h1>Upload</h1>
+
+    <p><b>WARNING: This is a demo app, so do expect some errors.</b></p>
+
     <form method="POST" enctype="multipart/form-data">
+        <label for="file">File</label>
         <input type="file" name="file">
         <input type="submit">
     </form>
+
+    <button id="uploadButton" data-url="{{ url_for('index') }}">Go back</button>
+
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', function() {
+            var url = this.getAttribute('data-url');
+            location.href = url;
+        });
+    </script>    
 {% endblock %}

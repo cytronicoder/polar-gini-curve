@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Default Title{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='custom.css') }}"
+    />
+  </head>
+  <body>
     {% block content %}{% endblock %}
-</body>
+
+    <footer>
+      <p>
+        <a
+          href="https://github.com/cytronicoder/polar-gini-curve"
+          target="_blank"
+          >View on GitHub</a
+        >
+        <span> | </span>
+        <a href="https://www.instagram.com/cytronical/" target="_blank"
+          >Follow me on Instagram</a
+        >
+      </p>
+    </footer>
+  </body>
 </html>
