@@ -14,6 +14,10 @@ from util.render_markdown import (
 
 app = Flask(__name__)
 
+# Create temporary storage for the plot
+if not os.path.exists("/tmp"):
+    os.mkdir("/tmp")
+
 
 @app.route("/")
 def index():
