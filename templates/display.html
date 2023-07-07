@@ -3,14 +3,20 @@
 {% block title %}Data Display{% endblock %}
 
 {% block content %}
-    <h1>Data Display</h1>
-
-    <!-- TODO: REMOVE DEBUG INFO WHEN DONE -->
-    <h2>Debug information</h2>
-    <p>File name: {{ filename }}</p>
-    <!-- TODO: REMOVE DEBUG INFO WHEN DONE -->
+    <h1>{{ title_for }}</h1>
 
     <!-- Note: I use Vercel to serve images in temporary storage -->
     <img src="{{ url_for('serve_tmp_file', filename=filename) }}" alt="Plot Image">
+
+    <div>
+        <button id="goHomeButton" data-url="{{ url_for('index') }}">Go back to home</button>
+    </div>
+    
+    <script>
+        document.getElementById('goHomeButton').addEventListener('click', function() {
+            var url = this.getAttribute('data-url');
+            location.href = url;
+        });
+    </script>
 
 {% endblock %}
