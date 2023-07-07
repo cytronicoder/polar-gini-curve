@@ -11,7 +11,7 @@ from io import BytesIO
 from scipy.io import loadmat
 
 import numpy as np
-import os
+import tempfile
 from util.render_markdown import (
     render_markdown,
 )
@@ -21,11 +21,8 @@ from util.graph_tsne import graph_tsne
 app = Flask(__name__)
 app.secret_key = "polarginicurves"  # dummy secret key
 
-# Create temporary storage for the plot
-if not os.path.exists("/tmp"):
-    os.mkdir("/tmp")
-
 gene_list = set()
+temp_dir = tempfile.mkdtemp()
 
 
 @app.route("/")
@@ -61,8 +58,6 @@ def check_gene_marker():
     # Here, check if gene_marker exists in gene_list
     exists = gene_marker in gene_list
 
-    print(exists)
-
     return jsonify({"exists": exists})
 
 
@@ -77,7 +72,6 @@ def process_gene_list():
 
             flattened_gene_list = [item[0][0] for item in mat.get("geneList")]
             gene_list = set(flattened_gene_list)
-            print(gene_list)
     return (
         "",
         204,
@@ -119,6 +113,7 @@ def draw_tsne():
         expression_data=expression,
         gene_list=gene_list,  # This should be loaded previously or you can include it in the form
         random_state=0,
+        tmp_dir=temp_dir,
     )
 
     # Render display.html
@@ -130,13 +125,15 @@ def display_tsne():
     gene_marker = session.get("gene_marker")
     selected_cluster = session.get("selected_cluster")
     return render_template(
-        "display.html", title_for=f"t-SNE for marker gene {gene_marker} in cluster {selected_cluster}", filename=f"tsne_{gene_marker}_c-{selected_cluster}.png"
+        "display.html",
+        title_for=f"t-SNE for marker gene {gene_marker} in cluster {selected_cluster}",
+        filename=f"tsne_{gene_marker}_c-{selected_cluster}.png",
     )
 
 
 @app.route("/tmp/<path:filename>")
 def serve_tmp_file(filename):
-    return send_from_directory("/tmp", filename)
+    return send_from_directory(temp_dir, filename)
 
 
 if __name__ == "__main__":
