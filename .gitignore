@@ -160,6 +160,4 @@ cython_debug/
 #.idea/
 
 # Custom
-.vercel
-uploads
-static/images
+*.pyc
