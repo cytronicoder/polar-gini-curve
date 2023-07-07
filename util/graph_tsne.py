@@ -80,11 +80,12 @@ def graph_tsne(
     # Labels and title
     ax.set_xlabel("t-SNE 1")
     ax.set_ylabel("t-SNE 2")
+    ax.set_title(f"t-SNE for marker gene {marker_gene} in cluster {target_cluster_id}")
 
     # Save figure in png format
     file_name = f"tsne_{marker_gene}_c-{target_cluster_id}.png"
     file_path = os.path.join(tmp_dir, file_name)
     plt.savefig(file_path)
-    
+
     # Optionally, you can still show the plot
     # plt.show()

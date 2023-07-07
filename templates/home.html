@@ -1,18 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}Home{% endblock %}
-
-{% block content %}
-{{ content|safe }}
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%} {{ content|safe }}
 
 <div>
-    <button id="uploadButton" data-url="{{ url_for('playground') }}">Test the app today</button>
+  <button id="uploadButton" data-url="{{ url_for('tsne_generation') }}">
+    Test the t-SNE generation
+  </button>
 </div>
 
 <script>
-    document.getElementById('uploadButton').addEventListener('click', function() {
-        var url = this.getAttribute('data-url');
-        location.href = url;
+  document
+    .getElementById("uploadButton")
+    .addEventListener("click", function () {
+      var url = this.getAttribute("data-url");
+      location.href = url;
     });
 </script>
 

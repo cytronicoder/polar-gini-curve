@@ -30,9 +30,9 @@ def index():
     return render_markdown("README.md", "home.html")
 
 
-@app.route("/playground/")
-def playground():
-    return render_template("upload.html")
+@app.route("/tsne_generation")
+def tsne_generation():
+    return render_template("tsne_upload.html")
 
 
 @app.route("/process_clusters", methods=["POST"])
@@ -116,7 +116,7 @@ def draw_tsne():
         tmp_dir=temp_dir,
     )
 
-    # Render display.html
+    # Render tsne_display.html
     return jsonify(url=url_for("display_tsne"))
 
 
@@ -125,8 +125,7 @@ def display_tsne():
     gene_marker = session.get("gene_marker")
     selected_cluster = session.get("selected_cluster")
     return render_template(
-        "display.html",
-        title_for=f"t-SNE for marker gene {gene_marker} in cluster {selected_cluster}",
+        "tsne_display.html",
         filename=f"tsne_{gene_marker}_c-{selected_cluster}.png",
     )
 
