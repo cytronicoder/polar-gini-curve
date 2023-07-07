@@ -79,6 +79,13 @@ input[type="submit"] {
   cursor: pointer;
 }
 
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 20px auto;
+}
+
 footer {
   text-align: center;
   margin-top: 20px;
@@ -111,6 +118,14 @@ footer {
     background-color: #020617;
     color: white;
     border: 1px solid white;
+  }
+
+  input:disabled {
+    background-color: gray;
+  }
+
+  input[type="text"]:enabled {
+    background-color: #ec3750;
   }
 
   input[type="submit"] {

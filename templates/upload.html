@@ -8,9 +8,6 @@
     <p><b>WARNING: This is a demo app, so do expect some errors.</b></p>
 
     <form id="upload-form" method="POST" enctype="multipart/form-data">
-        <label for="gene_list">Gene list</label>
-        <input type="file" name="gene_list" id="gene_list" accept=".mat" required>
-        
         <label for="cluster_id">Cluster ID</label>
         <input type="file" name="cluster_id" id="cluster_id" accept=".mat" required>
 
@@ -19,6 +16,9 @@
 
         <label for="expression">Expression</label>
         <input type="file" name="expression" id="expression" accept=".mat" required>
+
+        <label for="gene_list">Gene list</label>
+        <input type="file" name="gene_list" id="gene_list" accept=".mat" required>
         
         <!-- Select input that will be populated with clusters -->
         <label for="selected_cluster">Select cluster:</label>

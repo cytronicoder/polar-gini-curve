@@ -18,6 +18,7 @@ def graph_tsne(
     expression_data,
     gene_list,
     random_state=0,
+    tmp_dir=".",
 ):
     """
     Plot t-SNE visualization for a marker gene in a specific cluster.
@@ -34,15 +35,6 @@ def graph_tsne(
     Returns:
         None. The plot is displayed and saved as a PNG file.
     """
-
-    print(target_cluster_id)
-    print(marker_gene)
-    print(coordinate)
-    print(cluster_id)
-    print(expression_data)
-    print(gene_list)
-    print(random_state)
-
     # Create a t-SNE model
     model = TSNE(n_components=2, random_state=random_state)
 
@@ -91,7 +83,7 @@ def graph_tsne(
 
     # Save figure in png format
     file_name = f"tsne_{marker_gene}_c-{target_cluster_id}.png"
-    file_path = os.path.join('tmp', file_name)
+    file_path = os.path.join(tmp_dir, file_name)
     plt.savefig(file_path)
     
     # Optionally, you can still show the plot
