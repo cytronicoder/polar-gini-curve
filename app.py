@@ -1,3 +1,11 @@
+"""
+Flask server module for processing biological data and rendering interactive results.
+"""
+
+import tempfile
+from io import BytesIO
+
+import numpy as np
 from flask import (
     Flask,
     request,
@@ -7,15 +15,9 @@ from flask import (
     session,
     send_from_directory,
 )
-from io import BytesIO
 from scipy.io import loadmat
 
-import numpy as np
-import tempfile
-from util.render_markdown import (
-    render_markdown,
-)
-
+from util.render_markdown import render_markdown
 from util.polar_gini_curves import graph_tsne, graph_gini
 
 app = Flask(__name__)
@@ -27,16 +29,22 @@ temp_dir = tempfile.mkdtemp()
 
 @app.route("/")
 def index():
+    """Render the home page."""
     return render_markdown("README.md", "home.html")
 
 
 @app.route("/playground/")
 def playground():
+    """Render the upload page."""
     return render_template("upload.html")
 
 
 @app.route("/process_clusters", methods=["POST"])
 def process_clusters():
+    """
+    Process the uploaded clusters, identify the unique clusters,
+    and return them as a JSON response.
+    """
     file = request.files["cluster_id"]
     if file:
         file_bytes = BytesIO(file.read())
@@ -52,6 +60,7 @@ def process_clusters():
 
 @app.route("/check_gene_marker", methods=["POST"])
 def check_gene_marker():
+    """Check if a gene marker exists in the gene list."""
     data = request.json
     gene_marker = data.get("gene_marker")
 
@@ -63,6 +72,7 @@ def check_gene_marker():
 
 @app.route("/process_gene_list", methods=["POST"])
 def process_gene_list():
+    """Process the uploaded gene list."""
     if "gene_list" in request.files:
         file = request.files["gene_list"]
         if file.filename.endswith(".mat"):
@@ -80,33 +90,9 @@ def process_gene_list():
 
 @app.route("/draw_tsne", methods=["POST"])
 def draw_tsne():
-    if "gene_marker" in session and "selected_cluster" in session:
-        gene_marker = session["gene_marker"]
-        selected_cluster = session["selected_cluster"]
-    else:
-        gene_marker = request.form["gene_marker"]
-        selected_cluster = request.form["selected_cluster"]
-
-        session["gene_marker"] = gene_marker
-        session["selected_cluster"] = selected_cluster
-
-    # Handle the uploaded files
-    coordinate_file = request.files["coordinate"]
-    cluster_id_file = request.files["cluster_id"]
-    expression_file = request.files["expression"]
-    gene_list_file = request.files["gene_list"]
-
-    # Load the files
-    coordinate_file = BytesIO(coordinate_file.read())
-    cluster_id_file = BytesIO(cluster_id_file.read())
-    expression_file = BytesIO(expression_file.read())
-    gene_list_file = BytesIO(gene_list_file.read())
-
-    # Read the data from the files (assuming they are .mat files)
-    coordinate = loadmat(coordinate_file)["coordinate"]
-    cluster_id = loadmat(cluster_id_file)["clusterID"]
-    expression = loadmat(expression_file)["Expression"]
-    gene_list = loadmat(gene_list_file)["geneList"]
+    """Generate the t-SNE graph based on the uploaded data and inputs from the session."""
+    gene_marker, selected_cluster = get_marker_and_cluster()
+    coordinate, cluster_id, expression, gene_list = get_files_data()
 
     # Call the graph_tsne function to generate the graph
     graph_tsne(
@@ -126,6 +112,55 @@ def draw_tsne():
 
 @app.route("/generate_gini", methods=["POST"])
 def generate_gini():
+    """Generate the Gini graph based on the uploaded data and inputs from the session."""
+    gene_marker, selected_cluster = get_marker_and_cluster()
+    coordinate, cluster_id, expression, gene_list = get_files_data()
+
+    # Call the graph_gini function to generate the graph
+    graph_gini(
+        marker_gene=gene_marker,
+        coordinate=coordinate,
+        cluster_id=cluster_id,
+        target_cluster_id=int(selected_cluster),
+        expression_data=expression,
+        gene_list=gene_list,
+        tmp_dir=temp_dir,
+    )
+
+    # Render gini_display.html
+    return jsonify(url=url_for("display_gini"))
+
+
+@app.route("/display_tsne")
+def display_tsne():
+    """Display the t-SNE graph."""
+    gene_marker = session.get("gene_marker")
+    selected_cluster = session.get("selected_cluster")
+    return render_template(
+        "display.html",
+        filename=f"tsne_{gene_marker}_c-{selected_cluster}.png",
+    )
+
+
+@app.route("/display_gini")
+def display_gini():
+    """Display the Gini graph."""
+    gene_marker = session.get("gene_marker")
+    selected_cluster = session.get("selected_cluster")
+    return render_template(
+        "display.html",
+        filename=f"gini_{gene_marker}_c-{selected_cluster}.png",
+    )
+
+
+@app.route("/tmp/<path:filename>")
+def serve_tmp_file(filename):
+    """Serve temporary files."""
+    return send_from_directory(temp_dir, filename)
+
+
+def get_marker_and_cluster():
+    """Retrieve gene marker and selected cluster from session or form."""
     if "gene_marker" in session and "selected_cluster" in session:
         gene_marker = session["gene_marker"]
         selected_cluster = session["selected_cluster"]
@@ -136,6 +171,11 @@ def generate_gini():
         session["gene_marker"] = gene_marker
         session["selected_cluster"] = selected_cluster
 
+    return gene_marker, selected_cluster
+
+
+def get_files_data():
+    """Load and parse data from uploaded files."""
     # Handle the uploaded files
     coordinate_file = request.files["coordinate"]
     cluster_id_file = request.files["cluster_id"]
@@ -154,44 +194,7 @@ def generate_gini():
     expression = loadmat(expression_file)["Expression"]
     gene_list = loadmat(gene_list_file)["geneList"]
 
-    # Call the plot_gini function to generate the graph
-    graph_gini(
-        marker_gene=gene_marker,
-        coordinate=coordinate,
-        cluster_id=cluster_id,
-        target_cluster_id=int(selected_cluster),
-        expression_data=expression,
-        gene_list=gene_list,
-        tmp_dir=temp_dir,
-    )
-
-    # Render gini_display.html
-    return jsonify(url=url_for("display_gini"))
-
-
-@app.route("/display_tsne")
-def display_tsne():
-    gene_marker = session.get("gene_marker")
-    selected_cluster = session.get("selected_cluster")
-    return render_template(
-        "display.html",
-        filename=f"tsne_{gene_marker}_c-{selected_cluster}.png",
-    )
-
-
-@app.route("/display_gini")
-def display_gini():
-    gene_marker = session.get("gene_marker")
-    selected_cluster = session.get("selected_cluster")
-    return render_template(
-        "display.html",
-        filename=f"gini_{gene_marker}_c-{selected_cluster}.png",
-    )
-
-
-@app.route("/tmp/<path:filename>")
-def serve_tmp_file(filename):
-    return send_from_directory(temp_dir, filename)
+    return coordinate, cluster_id, expression, gene_list
 
 
 if __name__ == "__main__":
