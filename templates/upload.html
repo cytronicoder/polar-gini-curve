@@ -17,18 +17,16 @@
   <label for="gene_list">Gene list</label>
   <input type="file" name="gene_list" id="gene_list" accept=".mat" required />
 
-  <!-- Select input that will be populated with clusters -->
   <label for="selected_cluster">Select cluster:</label>
   <select name="selected_cluster" id="selected_cluster" disabled required>
     <option value="">Choose cluster</option>
   </select>
 
-  <!-- Input for gene marker -->
   <label for="gene_marker">Gene marker:</label>
   <input type="text" name="gene_marker" id="gene_marker" disabled required />
 
-  <!-- Submit button -->
-  <input type="submit" value="Submit" />
+  <button type="button" id="tsne-submit">Generate TSNE</button>
+  <button type="button" id="gini-submit">Generate Gini</button>
 </form>
 
 <div>
@@ -54,7 +52,6 @@
           const formData = new FormData();
           formData.append("cluster_id", fileInput.files[0]);
 
-          // Send file to server
           fetch('{{ url_for("process_clusters") }}', {
             method: "POST",
             body: formData,
@@ -64,7 +61,6 @@
               const select = document.getElementById("selected_cluster");
               select.disabled = false; // Enable the select input
 
-              // Populate the select input with clusters
               data.clusters.forEach((cluster) => {
                 const option = document.createElement("option");
                 option.value = cluster;
@@ -81,77 +77,84 @@
           const formData = new FormData();
           formData.append("gene_list", fileInput.files[0]);
 
-          // Send file to server
           fetch('{{ url_for("process_gene_list") }}', {
             method: "POST",
             body: formData,
           }).then((response) => {
-            // Enable the gene marker input box
             document.getElementById("gene_marker").disabled = false;
           });
         }
       }
     });
 
-  document
-    .getElementById("upload-form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent the form from being submitted normally
+  function submitForm(route) {
+    const geneMarker = document.getElementById("gene_marker").value;
+    fetch("{{ url_for('check_gene_marker') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gene_marker: geneMarker }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.exists) {
+          const formData = new FormData();
+          formData.append(
+            "gene_marker",
+            document.getElementById("gene_marker").value
+          );
+          formData.append(
+            "selected_cluster",
+            document.getElementById("selected_cluster").value
+          );
+          formData.append(
+            "coordinate",
+            document.getElementById("coordinate").files[0]
+          );
+          formData.append(
+            "cluster_id",
+            document.getElementById("cluster_id").files[0]
+          );
+          formData.append(
+            "expression",
+            document.getElementById("expression").files[0]
+          );
+          formData.append(
+            "gene_list",
+            document.getElementById("gene_list").files[0]
+          );
 
-      const geneMarker = document.getElementById("gene_marker").value;
-
-      // Send the gene marker to the server
-      fetch("{{ url_for('check_gene_marker') }}", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gene_marker: geneMarker }),
+          fetch(route, {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.url) {
+                window.location.href = data.url;
+              } else {
+                alert("An error occurred");
+              }
+            });
+        } else {
+          alert("Gene marker does not exist in the list.");
+        }
       })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.exists) {
-            const formData = new FormData();
-            formData.append(
-              "gene_marker",
-              document.getElementById("gene_marker").value
-            );
-            formData.append(
-              "selected_cluster",
-              document.getElementById("selected_cluster").value
-            );
-            formData.append(
-              "coordinate",
-              document.getElementById("coordinate").files[0]
-            );
-            formData.append(
-              "cluster_id",
-              document.getElementById("cluster_id").files[0]
-            );
-            formData.append(
-              "expression",
-              document.getElementById("expression").files[0]
-            );
-            formData.append(
-              "gene_list",
-              document.getElementById("gene_list").files[0]
-            );
+      .catch(() => {
+        button.innerText = originalText;
+        otherButton.disabled = false;
+      });
+  }
 
-            // Send the necessary data to the server
-            fetch("{{ url_for('draw_tsne') }}", {
-              method: "POST",
-              body: formData,
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                if (data.url) {
-                  window.location.href = data.url;
-                } else {
-                  alert("An error occurred");
-                }
-              });
-          } else {
-            alert("Gene marker does not exist in the list.");
-          }
-        });
+  document
+    .getElementById("tsne-submit")
+    .addEventListener("click", function (event) {
+      submitForm('{{ url_for("draw_tsne") }}');
+    });
+
+  document
+    .getElementById("gini-submit")
+    .addEventListener("click", function (event) {
+      submitForm('{{ url_for("generate_gini") }}');
     });
 </script>
 {% endblock %}
