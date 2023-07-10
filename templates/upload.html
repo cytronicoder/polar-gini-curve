@@ -17,16 +17,16 @@
   <label for="gene_list">Gene list</label>
   <input type="file" name="gene_list" id="gene_list" accept=".mat" required />
 
-  <label for="selected_cluster">Select cluster:</label>
+  <label for="selected_cluster">Select cluster</label>
   <select name="selected_cluster" id="selected_cluster" disabled required>
     <option value="">Choose cluster</option>
   </select>
 
-  <label for="gene_marker">Gene marker:</label>
+  <label for="gene_marker">Gene marker</label>
   <input type="text" name="gene_marker" id="gene_marker" disabled required />
 
-  <button type="button" id="tsne-submit">Generate TSNE</button>
-  <button type="button" id="gini-submit">Generate Gini</button>
+  <button type="button" id="tsne-submit">Generate t-SNE graph</button>
+  <button type="button" id="gini-submit">Generate Gini graph</button>
 </form>
 
 <div>
@@ -98,10 +98,7 @@
       .then((data) => {
         if (data.exists) {
           const formData = new FormData();
-          formData.append(
-            "gene_marker",
-            document.getElementById("gene_marker").value
-          );
+          formData.append("gene_marker", geneMarker);
           formData.append(
             "selected_cluster",
             document.getElementById("selected_cluster").value
