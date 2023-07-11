@@ -130,20 +130,6 @@ def generate_gini():
     expression_file = request.files["expression"]
     gene_list_file = request.files["gene_list"]
 
-    # New: Get advanced parameters, if provided
-    n_jobs = request.form.get('n_jobs')
-    early_exaggeration = request.form.get('early_exaggeration')
-    learning_rate = request.form.get('learning_rate')
-    random_state = request.form.get('random_state')
-
-    # Convert to float
-    early_exaggeration = float(early_exaggeration) if early_exaggeration else None
-    learning_rate = float(learning_rate) if learning_rate else None
-
-    # Convert to int
-    n_jobs = int(n_jobs) if n_jobs else None
-    random_state = int(random_state) if random_state else None
-
     # Load the files
     coordinate_file = BytesIO(coordinate_file.read())
     cluster_id_file = BytesIO(cluster_id_file.read())
@@ -165,10 +151,6 @@ def generate_gini():
         expression_data=expression,
         gene_list=gene_list,
         tmp_dir=temp_dir,
-        n_jobs=n_jobs,
-        early_exaggeration=early_exaggeration,
-        learning_rate=learning_rate,
-        random_state=random_state,
     )
 
     # Render gini_display.html
