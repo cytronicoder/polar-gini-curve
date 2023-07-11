@@ -34,6 +34,14 @@ def index():
 def playground():
     return render_template("upload.html")
 
+@app.route("/tsne_explanation")
+def tsne_explanation():
+    return render_markdown("docs/tsne.md", "explanation.html")
+
+@app.route("/gini_explanation")
+def gini_explanation():
+    return render_markdown("docs/gini.md", "explanation.html")
+
 
 @app.route("/process_clusters", methods=["POST"])
 def process_clusters():

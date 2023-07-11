@@ -8,7 +8,7 @@ body {
 }
 
 a {
-  color: #ec3750;
+  color: #f594a1;
   text-decoration: none;
 }
 
@@ -81,7 +81,7 @@ form button {
   font-size: 16px;
   padding: 8px;
   cursor: pointer;
-  margin: 10px 0;
+  margin: 20px 0 10px 0;
 }
 
 img {
@@ -108,10 +108,6 @@ footer {
   body {
     color: white;
     background: #020617;
-  }
-
-  a {
-    color: white;
   }
 
   form {

@@ -26,7 +26,10 @@
   <input type="text" name="gene_marker" id="gene_marker" disabled required />
 
   <button type="button" id="tsne-submit">Generate t-SNE graph</button>
+  <a href="{{ url_for('tsne_explanation') }}">Explanation: What is t-SNE?</a>
+
   <button type="button" id="gini-submit">Generate Gini graph</button>
+  <a href="{{ url_for('gini_explanation') }}">Explanation: What is Gini?</a>
 </form>
 
 <div>
