@@ -26,7 +26,10 @@ def main() -> None:
         "--clusters",
         nargs=2,
         type=int,
-        help="Two cluster IDs to compare (e.g., --clusters 1 2). If not specified, uses first two clusters found.",
+        help=(
+            "Two cluster IDs to compare (e.g., --clusters 1 2). "
+            "If not specified, uses first two clusters found."
+        ),
     )
     args = parser.parse_args()
 
@@ -40,7 +43,8 @@ def main() -> None:
         ):
             available = sorted(unique_labels)
             raise ValueError(
-                f"Specified clusters {selected_clusters} not found. Available clusters: {available}"
+                f"Specified clusters {selected_clusters} not found. "
+                f"Available clusters: {available}"
             )
     else:
         if len(unique_labels) < 2:
@@ -49,7 +53,8 @@ def main() -> None:
             )
         selected_clusters = unique_labels[:2]
         print(
-            f"Multiple clusters found {sorted(unique_labels)}. Using first two: {selected_clusters}"
+            f"Multiple clusters found {sorted(unique_labels)}. "
+            f"Using first two: {selected_clusters}"
         )
 
     mask = np.isin(labels, selected_clusters)
