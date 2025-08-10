@@ -25,7 +25,7 @@ except ImportError:
 
 
 def load_csv(
-    path: str, x_col: str = "x", y_col: str = "y", label_col: str = "label"
+    path: str, x_col: str = "x", y_col: str = "y", label_col: str = "cluster"
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Load coordinates and labels from a CSV file."""
     df = pd.read_csv(path)

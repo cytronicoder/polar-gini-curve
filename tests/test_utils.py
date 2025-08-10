@@ -13,7 +13,7 @@ matplotlib.use("Agg")
 def test_utils(tmp_path):
     """Test preprocessing and plotting utilities."""
     csv_path = tmp_path / "data.csv"
-    csv_path.write_text("x,y,label\n0,0,0\n1,1,1\n")
+    csv_path.write_text("x,y,cluster\n0,0,0\n1,1,1\n")
     points, _ = load_csv(csv_path)
     norm = normalize(points)
     assert np.isclose(norm.min(), 0.0)

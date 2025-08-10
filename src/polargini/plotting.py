@@ -8,6 +8,50 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def plot_embedding_and_pgc(
+    points: np.ndarray,
+    labels: np.ndarray,
+    angles: np.ndarray,
+    *curves: np.ndarray,
+    cluster_labels: Optional[list[str]] = None,
+) -> None:
+    """Plot the 2D embedding and PGC side by side."""
+    fig = plt.figure(figsize=(15, 6))
+
+    ax1 = fig.add_subplot(121)
+    unique_labels = np.unique(labels)
+
+    if cluster_labels is None:
+        cluster_labels = [f"Cluster {label}" for label in unique_labels]
+
+    colors = plt.cm.get_cmap('tab10')(np.arange(len(unique_labels)))
+
+    for i, label in enumerate(unique_labels):
+        mask = labels == label
+        cluster_points = points[mask]
+        ax1.scatter(
+            cluster_points[:, 0],
+            cluster_points[:, 1],
+            c=[colors[i]],
+            label=cluster_labels[i] if i < len(cluster_labels) else f"Cluster {label}",
+            alpha=0.7,
+            s=20,
+        )
+
+    ax1.set_xlabel("X coordinate")
+    ax1.set_ylabel("Y coordinate")
+    ax1.set_title("2D Embedding")
+    ax1.grid(True, alpha=0.3)
+    ax1.legend()
+    ax1.set_aspect("equal", adjustable="box")
+
+    ax2 = fig.add_subplot(122, projection="polar")
+    plot_pgc(angles, *curves, ax=ax2, labels=cluster_labels[: len(curves)])
+
+    plt.tight_layout()
+    plt.show()
+
+
 def plot_pgc(
     angles: np.ndarray,
     *curves: np.ndarray,

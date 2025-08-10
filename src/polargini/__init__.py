@@ -2,7 +2,7 @@
 
 from .pgc import polar_gini_curve
 from .metrics import gini, rmsd
-from .plotting import plot_pgc
+from .plotting import plot_pgc, plot_embedding_and_pgc
 from .io import (
     load_csv,
     load_legacy_dataset,
@@ -16,6 +16,7 @@ __all__ = [
     "gini",
     "rmsd",
     "plot_pgc",
+    "plot_embedding_and_pgc",
     "load_csv",
     "load_legacy_dataset",
     "legacy_to_csv",
