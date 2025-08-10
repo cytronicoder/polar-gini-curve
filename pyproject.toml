@@ -37,11 +37,13 @@ target-version = ["py39"]
 [tool.ruff]
 line-length = 88
 target-version = "py39"
-select = ["E", "F", "B"]
 extend-exclude = ["dist"]
 
+[tool.ruff.lint]
+select = ["E", "F", "B"]
+
 [tool.mypy]
-python_version = 3.9
+python_version = "3.9"
 warn_unused_configs = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
