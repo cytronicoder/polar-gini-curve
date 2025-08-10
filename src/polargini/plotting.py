@@ -51,12 +51,12 @@ def plot_pgc(
     ax.set_ylabel("Gini coefficient")
     ax.set_title("Polar Gini Curve", pad=20)
 
-    ax.set_theta_direction(-1)
-    ax.set_theta_zero_location("E")
+    ax.set_theta_direction(-1)  # type: ignore[attr-defined]
+    ax.set_theta_zero_location("E")  # type: ignore[attr-defined]
 
     if len(plot_curves) > 0:
-        max_gini = max(np.max(curve) for curve in plot_curves)
-        min_gini = min(np.min(curve) for curve in plot_curves)
+        max_gini: float = max(np.max(curve) for curve in plot_curves)
+        min_gini: float = min(np.min(curve) for curve in plot_curves)
         ax.set_ylim(min_gini * 0.95, max_gini * 1.05)
 
     ax.grid(True, alpha=0.3)

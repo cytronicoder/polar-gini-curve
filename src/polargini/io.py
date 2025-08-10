@@ -166,7 +166,7 @@ def legacy_to_csv(
     print("Files created: coordinates.csv, expression.csv, genes.csv, clusters.csv")
 
 
-def load_legacy_for_pgc(
+def load_legacy_for_pgc(  # type: ignore[misc]
     legacy_dir: str,
     gene_name: Optional[str] = None,
     cluster_filter: Optional[List[int]] = None,
@@ -182,10 +182,10 @@ def load_legacy_for_pgc(
                 f"{data['genes'][:10]}..."
             )
 
-        gene_idx = data["genes"].index(gene_name)
-        labels = data["expression"][:, gene_idx]
+        gene_idx = data["genes"].index(gene_name)  # type: ignore[union-attr]
+        labels = data["expression"][:, gene_idx]  # type: ignore[call-overload]
     else:
-        labels = data["clusters"]
+        labels = data["clusters"]  # type: ignore[assignment]
 
     if cluster_filter is not None:
         mask = np.isin(data["clusters"], cluster_filter)
@@ -197,11 +197,11 @@ def load_legacy_for_pgc(
             coordinates = coordinates[valid_mask]
             labels = labels[valid_mask]
     else:
-        valid_mask = data["clusters"] != -1
+        valid_mask = data["clusters"] != -1  # type: ignore[assignment]
         coordinates = coordinates[valid_mask]
         labels = labels[valid_mask]
 
-    return coordinates, labels
+    return coordinates, labels  # type: ignore[return-value]
 
 
 def convert_rsmd_results(legacy_dir: str, output_dir: str) -> None:
@@ -218,5 +218,10 @@ def convert_rsmd_results(legacy_dir: str, output_dir: str) -> None:
             csv_path = output_path / f"{cluster_name}.csv"
             df.to_csv(csv_path, index=False)
             print(f"Converted {excel_file.name} to {csv_path.name}")
-        except (FileNotFoundError, PermissionError, ValueError, pd.errors.EmptyDataError) as e:
+        except (
+            FileNotFoundError,
+            PermissionError,
+            ValueError,
+            pd.errors.EmptyDataError,
+        ) as e:
             print(f"Error converting {excel_file.name}: {e}")
