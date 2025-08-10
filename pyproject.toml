@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polargini"
+version = "0.1.0"
+description = "Python implementation of the Polar Gini Curve"
+readme = "README.md"
+authors = [
+    { name = "Thanh Minh Nguyen", email = "thamnguy@uab.edu" },
+    { name = "Zhandos Sembay", email = "zsembay8@uab.edu" },
+]
+maintainers = [{ name = "Zeyu Yao", email = "cytronicoder@gmail.com" }]
+license = { text = "MIT License" }
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.20", "pandas>=1.1"]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.3"]
+io = ["scipy>=1.5"]
+dev = [
+    "pytest>=6",
+    "pytest-cov>=3",
+    "ruff>=0.1.0",
+    "black>=23.1.0",
+    "mypy>=1.0",
+    "matplotlib>=3.3",
+]
+
+[project.scripts]
+pgc = "polargini.cli:main"
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+extend-exclude = ["dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "B"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=polargini --cov-report=term-missing --cov-fail-under=85"
