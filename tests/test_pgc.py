@@ -1,4 +1,4 @@
-"""Tests for the Polar Gini Curve package."""
+"""Tests for the PGC package."""
 
 import numpy as np
 
