@@ -1,3 +1,5 @@
+"""Test utilities."""
+
 import numpy as np
 import matplotlib
 
@@ -9,9 +11,10 @@ matplotlib.use("Agg")
 
 
 def test_utils(tmp_path):
+    """Test preprocessing and plotting utilities."""
     csv_path = tmp_path / "data.csv"
     csv_path.write_text("x,y,label\n0,0,0\n1,1,1\n")
-    points, labels = load_csv(csv_path)
+    points, _ = load_csv(csv_path)
     norm = normalize(points)
     assert np.isclose(norm.min(), 0.0)
     assert np.isclose(norm.max(), 1.0)
