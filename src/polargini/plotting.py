@@ -24,7 +24,7 @@ def plot_embedding_and_pgc(
     if cluster_labels is None:
         cluster_labels = [f"Cluster {label}" for label in unique_labels]
 
-    colors = plt.cm.get_cmap('tab10')(np.arange(len(unique_labels)))
+    colors = plt.cm.tab10(np.arange(len(unique_labels)))
 
     for i, label in enumerate(unique_labels):
         mask = labels == label
@@ -92,7 +92,7 @@ def plot_pgc(
         ax.plot(plot_angles, curve, label=label, linewidth=2)
 
     ax.set_xlabel("Angle (radians)")
-    ax.set_ylabel("Gini coefficient")
+    ax.set_ylabel("Gini coefficient", labelpad=30)
     ax.set_title("Polar Gini Curve", pad=20)
 
     ax.set_theta_direction(-1)  # type: ignore[attr-defined]
