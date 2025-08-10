@@ -1,4 +1,4 @@
-"""Top-level package for polargini."""
+"""Top-level package for PGC."""
 
 from .pgc import polar_gini_curve
 from .metrics import gini, rmsd

@@ -1,4 +1,4 @@
-"""Plotting utilities for Polar Gini Curves."""
+"""Plotting utilities for PGCs."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Input utilities for Polar Gini Curve."""
+"""Input utilities for PGC."""
 
 from __future__ import annotations
 

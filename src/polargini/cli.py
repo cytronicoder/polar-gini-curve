@@ -1,4 +1,4 @@
-"""Command-line interface for polargini."""
+"""Command-line interface for PGC."""
 
 from __future__ import annotations
 
@@ -10,6 +10,10 @@ from .plotting import plot_pgc
 
 
 def main() -> None:
+    """
+    Main entry point for the CLI. Parses command-line arguments
+    and executes the polar Gini curve calculation.
+    """
     parser = argparse.ArgumentParser(description="Compute Polar Gini Curves.")
     parser.add_argument("--csv", required=True, help="CSV file with x,y,label columns.")
     parser.add_argument(

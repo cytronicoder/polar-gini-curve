@@ -1,4 +1,4 @@
-"""Metrics for Polar Gini Curve."""
+"""Metrics for PGC."""
 
 from __future__ import annotations
 

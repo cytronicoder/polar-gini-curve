@@ -1,4 +1,4 @@
-"""Compute Polar Gini Curves."""
+"""Compute PGCs."""
 
 from __future__ import annotations
 
