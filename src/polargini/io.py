@@ -171,7 +171,7 @@ def load_legacy_for_pgc(
     gene_name: Optional[str] = None,
     cluster_filter: Optional[List[int]] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Load legacy data formatted for polar gini curve analysis."""
+    """Load legacy data formatted for PGC analysis."""
     data = load_legacy_dataset(legacy_dir)
     coordinates = data["coordinates"]
 

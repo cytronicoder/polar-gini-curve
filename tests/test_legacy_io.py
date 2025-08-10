@@ -91,33 +91,23 @@ class TestLoadLegacyDataset:
     def test_load_legacy_dataset_basic(self, mock_load_mat):
         """Test basic loading of legacy dataset."""
 
-        # Mock the mat file loading
         def mock_load_side_effect(path):
             if "coordinate.mat" in path:
                 return np.array([[1.0, 2.0], [3.0, 4.0]])
             elif "Expression.mat" in path:
                 return np.array([[0.1, 0.2], [0.3, 0.4]])
             elif "geneList.mat" in path:
-                # Simulate MATLAB cell array
                 return np.array([["Gene1"], ["Gene2"]], dtype=object)
             elif "ClusterID.mat" in path:
                 return np.array([[1], [2]])
             return {}
 
         mock_load_mat.side_effect = mock_load_side_effect
-
         result = load_legacy_dataset("/fake/path")
 
-        # Check coordinates
         np.testing.assert_array_equal(result["coordinates"], [[1.0, 2.0], [3.0, 4.0]])
-
-        # Check expression
         np.testing.assert_array_equal(result["expression"], [[0.1, 0.2], [0.3, 0.4]])
-
-        # Check genes
         assert result["genes"] == ["Gene1", "Gene2"]
-
-        # Check clusters
         np.testing.assert_array_equal(result["clusters"], [1, 2])
 
     @patch("polargini.io.load_mat_file")
@@ -155,13 +145,11 @@ class TestLoadLegacyForPgc:
             "coordinates": np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]),
             "expression": np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]),
             "genes": ["Gene1", "Gene2"],
-            "clusters": np.array([1, 2, -1]),  # Include non-clusterable cell
+            "clusters": np.array([1, 2, -1]),
         }
         mock_load_dataset.return_value = mock_data
 
         coords, labels = load_legacy_for_pgc("/fake/path")
-
-        # Should exclude non-clusterable cells (-1)
         expected_coords = np.array([[1.0, 2.0], [3.0, 4.0]])
         expected_labels = np.array([1, 2])
 
@@ -182,7 +170,7 @@ class TestLoadLegacyForPgc:
         coords, labels = load_legacy_for_pgc("/fake/path", gene_name="Gene1")
 
         expected_coords = np.array([[1.0, 2.0], [3.0, 4.0]])
-        expected_labels = np.array([0.1, 0.3])  # First gene expression values
+        expected_labels = np.array([0.1, 0.3])
 
         np.testing.assert_array_equal(coords, expected_coords)
         np.testing.assert_array_equal(labels, expected_labels)
@@ -213,8 +201,6 @@ class TestLoadLegacyForPgc:
         mock_load_dataset.return_value = mock_data
 
         coords, labels = load_legacy_for_pgc("/fake/path", cluster_filter=[1, 3])
-
-        # Should only include clusters 1 and 3
         expected_coords = np.array([[1.0, 2.0], [5.0, 6.0]])
         expected_labels = np.array([1, 3])
 
@@ -238,26 +224,21 @@ class TestLegacyToCsv:
 
         with tempfile.TemporaryDirectory() as temp_dir:
             legacy_to_csv("/fake/legacy", temp_dir)
-
-            # Check that files were created
             output_path = Path(temp_dir)
             assert (output_path / "coordinates.csv").exists()
             assert (output_path / "expression.csv").exists()
             assert (output_path / "genes.csv").exists()
             assert (output_path / "clusters.csv").exists()
 
-            # Check coordinates file content
             coord_df = pd.read_csv(output_path / "coordinates.csv")
             assert list(coord_df.columns) == ["x", "y", "cluster"]
             assert len(coord_df) == 2
 
-            # Check expression file content
             expr_df = pd.read_csv(output_path / "expression.csv")
             assert "Gene1" in expr_df.columns
             assert "Gene2" in expr_df.columns
             assert "cluster" in expr_df.columns
 
-            # Check genes file content
             gene_df = pd.read_csv(output_path / "genes.csv")
             assert list(gene_df["gene"]) == ["Gene1", "Gene2"]
 
@@ -269,7 +250,6 @@ class TestConvertRsmdResults:
     @patch("polargini.io.Path.glob")
     def test_convert_rsmd_results(self, mock_glob, mock_read_excel):
         """Test conversion of RSMD Excel files to CSV."""
-        # Mock finding Excel files
         mock_file1 = Mock()
         mock_file1.stem = "RSMD_cluster1"
         mock_file1.name = "RSMD_cluster1.xlsx"
@@ -277,15 +257,11 @@ class TestConvertRsmdResults:
         mock_file2.stem = "RSMD_cluster2"
         mock_file2.name = "RSMD_cluster2.xlsx"
         mock_glob.return_value = [mock_file1, mock_file2]
-
-        # Mock DataFrame
         mock_df = pd.DataFrame({"gene": ["Gene1", "Gene2"], "value": [0.1, 0.2]})
         mock_read_excel.return_value = mock_df
 
         with tempfile.TemporaryDirectory() as temp_dir:
             convert_rsmd_results("/fake/legacy", temp_dir)
-
-            # Check that CSV files were created
             output_path = Path(temp_dir)
             assert (output_path / "RSMD_cluster1.csv").exists()
             assert (output_path / "RSMD_cluster2.csv").exists()

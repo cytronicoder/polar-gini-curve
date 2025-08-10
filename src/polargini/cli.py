@@ -12,7 +12,7 @@ from .plotting import plot_pgc
 def main() -> None:
     """
     Main entry point for the CLI. Parses command-line arguments
-    and executes the polar Gini curve calculation.
+    and executes the PGC calculation.
     """
     parser = argparse.ArgumentParser(description="Compute Polar Gini Curves.")
     parser.add_argument("--csv", required=True, help="CSV file with x,y,label columns.")

@@ -2,6 +2,9 @@
 
 import subprocess
 import sys
+from unittest.mock import patch
+
+from polargini.cli import main
 
 
 def test_cli_help():
@@ -28,3 +31,31 @@ def test_cli_run(tmp_path):
     )
     assert result.returncode == 0
     assert "Curve" in result.stdout
+
+
+def test_cli_main_function(tmp_path):
+    """Test the CLI main function directly for better coverage."""
+    csv_path = tmp_path / "data.csv"
+    csv_path.write_text("x,y,label\n0,0,0\n1,0,0\n0,1,1\n1,1,1\n")
+    
+    # Test main function directly
+    with patch('sys.argv', ['polargini.cli', '--csv', str(csv_path)]):
+        try:
+            main()  # This should run without errors
+        except SystemExit as e:
+            # main() might call sys.exit(0) on success
+            assert e.code == 0
+
+
+def test_cli_main_with_plot(tmp_path):
+    """Test the CLI main function with plot option."""
+    csv_path = tmp_path / "data.csv"
+    csv_path.write_text("x,y,label\n0,0,0\n1,0,0\n0,1,1\n1,1,1\n")
+    
+    # Test main function with plot option
+    with patch('sys.argv', ['polargini.cli', '--csv', str(csv_path), '--plot']):
+        try:
+            main()  # This should run without errors
+        except SystemExit as e:
+            # main() might call sys.exit(0) on success
+            assert e.code == 0
