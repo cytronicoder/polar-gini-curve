@@ -2,23 +2,19 @@
 Saves per-trial RMSDs, summaries, and example curves + plots.
 
 Run:
-  python3 examples/pgc_rmsd_simulation.py --n 5000 --angles 360 --repeats 1000 --seed 42 --outdir results
+  python3 examples/pgc_rmsd_simulation.py \
+    --n 5000 --angles 360 --repeats 1000 \
+    --seed 42 --outdir results
 """
 
 from __future__ import annotations
 import argparse
 from pathlib import Path
-import sys
 import time
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-script_dir = Path(__file__).resolve().parent
-src_dir = script_dir / "src"
-if src_dir.exists() and str(src_dir) not in sys.path:
-    sys.path.insert(0, str(src_dir))
 
 from polargini.pgc import polar_gini_curve
 from polargini.metrics import rmsd
@@ -58,7 +54,10 @@ def main():
     args = ap.parse_args()
 
     print(
-        f"Config: n={args.n}, angles={args.angles}, repeats={args.repeats}, seed={args.seed}, outdir={args.outdir}"
+        (
+            f"Config: n={args.n}, angles={args.angles}, repeats={args.repeats}, "
+            f"seed={args.seed}, outdir={args.outdir}"
+        )
     )
 
     data_dir = args.outdir
@@ -72,8 +71,11 @@ def main():
     t1 = time.perf_counter()
     r = np.sqrt(points[:, 0] ** 2 + points[:, 1] ** 2)
     print(
-        f"Sampled {args.n} points uniformly from unit disk in {t1 - t0:.3f}s. "
-        f"points.shape={points.shape}, r[min,mean,max]=[{r.min():.3f},{r.mean():.3f},{r.max():.3f}]"
+        (
+            f"Sampled {args.n} points uniformly from unit disk in {t1 - t0:.3f}s. "
+            f"points.shape={points.shape}, "
+            f"r[min,mean,max]=[{r.min():.3f},{r.mean():.3f},{r.max():.3f}]"
+        )
     )
 
     labels = np.zeros(args.n, dtype=int)
@@ -81,9 +83,12 @@ def main():
     t2 = time.perf_counter()
     angles, _ = polar_gini_curve(points, labels, num_angles=args.angles)
     t3 = time.perf_counter()
+    first5 = [round(x, 2) for x in np.degrees(angles[:5])]
     print(
-        f"Computed base angles for PGC in {t3 - t2:.3f}s: count={len(angles)}, "
-        f"first5(deg)={[round(x,2) for x in np.degrees(angles[:5])] }"
+        (
+            f"Computed base angles for PGC in {t3 - t2:.3f}s: count={len(angles)}, "
+            f"first5(deg)={first5}"
+        )
     )
 
     rows: list[tuple[int, int, float]] = []
@@ -91,10 +96,10 @@ def main():
     example_bg = None
     example_fg = None
 
-    block = max(1, args.repeats // 10)
+    block = max(2, args.repeats // 10)
     for m in PERCENTAGES:
-        print(f"Processing percentage: {m}% (k={int(round(args.n * m / 100))})")
         k = int(round(args.n * m / 100))
+        print(f"Processing percentage: {m}% (k={k})")
         tm0 = time.perf_counter()
         for i in range(args.repeats):
             fg_idx = rng.choice(args.n, size=k, replace=False)
@@ -107,8 +112,11 @@ def main():
 
             if (i % block) == 0:
                 print(
-                    f"  m={m}% trial={i}/{args.repeats} RMSD={val:.6f} bg[min,max]=[{bg_curve.min():.4f},{bg_curve.max():.4f}] "
-                    f"fg[min,max]=[{fg_curve.min():.4f},{fg_curve.max():.4f}]"
+                    (
+                        f"  m={m}% trial={i}/{args.repeats} RMSD={val:.6f} "
+                        f"bg[min,max]=[{bg_curve.min():.4f},{bg_curve.max():.4f}] "
+                        f"fg[min,max]=[{fg_curve.min():.4f},{fg_curve.max():.4f}]"
+                    )
                 )
 
             if m == 50 and i == 0:
@@ -121,7 +129,10 @@ def main():
         last_block = rows[-args.repeats :]
         vals = np.fromiter((v[2] for v in last_block), dtype=float, count=args.repeats)
         print(
-            f"Completed m={m}% in {tm1 - tm0:.3f}s: RMSD[min,mean,max]=[{vals.min():.6f},{vals.mean():.6f},{vals.max():.6f}]"
+            (
+                f"Completed m={m}% in {tm1 - tm0:.3f}s: "
+                f"RMSD[min,mean,max]=[{vals.min():.6f},{vals.mean():.6f},{vals.max():.6f}]"
+            )
         )
 
     df = pd.DataFrame(rows, columns=["m", "trial", "rmsd"])
@@ -145,8 +156,10 @@ def main():
     csv_summary = data_dir / "pgc_sim1_rmsd_summary.csv"
     summary.to_csv(csv_summary, index=False)
     print(
-        f"Saved summary statistics to CSV: {csv_summary} in {t5 - t4:.3f}s.\n"
-        f"Summary head:\n{summary.head().to_string(index=False)}"
+        (
+            f"Saved summary statistics to CSV: {csv_summary} in {t5 - t4:.3f}s.\n"
+            f"Summary head:\n{summary.head().to_string(index=False)}"
+        )
     )
 
     if example_angles is not None:
@@ -171,6 +184,7 @@ def main():
     ax.set_title("RMSD between foreground and background PGCs")
     ax.legend()
     fig.tight_layout()
+    plots_dir.mkdir(parents=True, exist_ok=True)
     save_fig(fig, plots_dir, "pgc_sim1_rmsd_summary")
     plt.close(fig)
 
