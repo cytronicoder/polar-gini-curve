@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Any
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +14,7 @@ def plot_embedding_and_pgc(
     angles: np.ndarray,
     *curves: np.ndarray,
     cluster_labels: Optional[list[str]] = None,
-    scatter_kwargs: Optional[dict] = None,
+    scatter_kwargs: Optional[dict[str, Any]] = None,
 ) -> None:
     """Plot the 2D embedding and PGC side by side."""
     fig = plt.figure(figsize=(15, 6))
@@ -27,27 +27,34 @@ def plot_embedding_and_pgc(
 
     colors = plt.cm.tab10(np.arange(len(unique_labels)))  # type: ignore[attr-defined]
 
-    base_scatter = {
+    allowed_keys = {"s", "alpha", "linewidths"}
+    base_scatter: dict[str, Any] = {
         "alpha": 0.7,
-        "s": 20,
-        "linewidths": 0,
+        "s": 20.0,
+        "linewidths": 0.0,
     }
+    user_raster = False
     if scatter_kwargs:
-        base_scatter.update(scatter_kwargs)
+        user_raster = bool(scatter_kwargs.get("rasterized", False))
+        for k in allowed_keys:
+            if k in scatter_kwargs:
+                base_scatter[k] = scatter_kwargs[k]
 
-    if points.shape[0] > 50000 and "rasterized" not in base_scatter:
-        base_scatter["rasterized"] = True
+    auto_raster = bool(points.shape[0] > 50000)
+    raster_flag = bool(user_raster or auto_raster)
 
     for i, label in enumerate(unique_labels):
         mask = labels == label
         cluster_points = points[mask]
-        ax1.scatter(
+        sc = ax1.scatter(
             cluster_points[:, 0],
             cluster_points[:, 1],
             c=[colors[i]],
             label=cluster_labels[i] if i < len(cluster_labels) else f"Cluster {label}",
             **base_scatter,
         )
+        if raster_flag:
+            sc.set_rasterized(True)
 
     ax1.set_xlabel("X coordinate")
     ax1.set_ylabel("Y coordinate")
