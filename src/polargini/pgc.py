@@ -6,8 +6,6 @@ from typing import List, Tuple
 
 import numpy as np
 
-from .metrics import gini
-
 
 def _gini_unweighted_columns(vals: np.ndarray) -> np.ndarray:
     """Compute unweighted Gini per column for a non-negative matrix.
