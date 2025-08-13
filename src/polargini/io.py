@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, TypedDict, cast
 
 import numpy as np
 import pandas as pd
@@ -172,7 +172,16 @@ def load_legacy_for_pgc(  # type: ignore[misc]
     cluster_filter: Optional[List[int]] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Load legacy data formatted for PGC analysis."""
-    data = load_legacy_dataset(legacy_dir)
+
+    class LegacyData(TypedDict):
+        coordinates: np.ndarray
+        expression: np.ndarray
+        genes: List[str]
+        clusters: np.ndarray
+
+    raw = load_legacy_dataset(legacy_dir)
+    data = cast(LegacyData, raw)
+
     coordinates = data["coordinates"]
 
     if gene_name:
@@ -182,10 +191,10 @@ def load_legacy_for_pgc(  # type: ignore[misc]
                 f"{data['genes'][:10]}..."
             )
 
-        gene_idx = data["genes"].index(gene_name)  # type: ignore[union-attr]
-        labels = data["expression"][:, gene_idx]  # type: ignore[call-overload]
+        gene_idx = data["genes"].index(gene_name)
+        labels = data["expression"][:, gene_idx]
     else:
-        labels = data["clusters"]  # type: ignore[assignment]
+        labels = data["clusters"]
 
     if cluster_filter is not None:
         mask = np.isin(data["clusters"], cluster_filter)
@@ -197,11 +206,11 @@ def load_legacy_for_pgc(  # type: ignore[misc]
             coordinates = coordinates[valid_mask]
             labels = labels[valid_mask]
     else:
-        valid_mask = data["clusters"] != -1  # type: ignore[assignment]
+        valid_mask = data["clusters"] != -1
         coordinates = coordinates[valid_mask]
         labels = labels[valid_mask]
 
-    return coordinates, labels  # type: ignore[return-value]
+    return coordinates, labels
 
 
 def convert_rsmd_results(legacy_dir: str, output_dir: str) -> None:
