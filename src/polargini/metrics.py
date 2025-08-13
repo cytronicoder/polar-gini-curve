@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+from typing import Literal, overload
 
 
 def _gini_unweighted(values: np.ndarray) -> float:
@@ -26,7 +27,21 @@ def _gini_unweighted(values: np.ndarray) -> float:
     return float((2.0 * (idx * xs).sum() / (n * total)) - (n + 1) / n)
 
 
-def compute_gini(pop: np.ndarray, val: np.ndarray, return_lorenz: bool = False):
+@overload
+def compute_gini(
+    pop: np.ndarray, val: np.ndarray, return_lorenz: Literal[False] = False
+) -> float: ...
+
+
+@overload
+def compute_gini(
+    pop: np.ndarray, val: np.ndarray, *, return_lorenz: Literal[True]
+) -> tuple[float, np.ndarray, np.ndarray]: ...
+
+
+def compute_gini(
+    pop: np.ndarray, val: np.ndarray, return_lorenz: bool = False
+) -> float | tuple[float, np.ndarray, np.ndarray]:
     """Compute weighted Gini and (optionally) Lorenz curves (MATLAB-compatible).
 
     Parameters
@@ -105,7 +120,11 @@ def gini(values: np.ndarray, weights: np.ndarray | None = None) -> float:
     if weights is None:
         return _gini_unweighted(vals)
 
-    return float(compute_gini(pop=np.asarray(weights, dtype=float), val=vals))
+    return compute_gini(
+        pop=np.asarray(weights, dtype=float),
+        val=vals,
+        return_lorenz=False,
+    )
 
 
 def rmsd(curve1: np.ndarray, curve2: np.ndarray) -> float:
