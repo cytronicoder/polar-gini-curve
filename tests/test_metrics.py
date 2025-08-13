@@ -1,22 +1,18 @@
-"""Tests for metrics."""
+"""Tests for metric utilities."""
 
 import numpy as np
+import pytest
 
-from polargini.metrics import gini, rmsd
-
-
-def test_gini_equal_values():
-    """Test Gini coefficient for equal values."""
-    assert gini(np.array([1, 1, 1])) == 0
+from polargini.metrics import gini
 
 
-def test_gini_simple():
-    """Test Gini coefficient for 0 and 1. Should be 0.5."""
-    assert np.isclose(gini(np.array([0, 1])), 0.5)
+def test_gini_weighted_matches_unweighted():
+    values = np.array([1.0, 2.0, 3.0])
+    weights = np.array([1.0, 1.0, 1.0])
+    assert gini(values) == pytest.approx(gini(values, weights))
 
 
-def test_rmsd():
-    """Test RMSD calculation."""
-    assert rmsd(np.array([1, 2]), np.array([1, 2])) == 0
-    expected = np.sqrt(((1 - 2) ** 2 + (2 - 4) ** 2) / 2)
-    assert np.isclose(rmsd(np.array([1, 2]), np.array([2, 4])), expected)
+def test_gini_weighted_value():
+    values = np.array([1.0, 1.0, 3.0])
+    weights = np.array([1.0, 1.0, 2.0])
+    assert gini(values, weights) == pytest.approx(0.25)

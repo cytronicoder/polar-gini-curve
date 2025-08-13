@@ -12,7 +12,7 @@ from .metrics import gini
 def polar_gini_curve(
     points: np.ndarray, labels: np.ndarray, num_angles: int = 360
 ) -> Tuple[np.ndarray, List[np.ndarray]]:
-    """Compute PGCs for two groups of points."""
+    """Compute Polar Gini Curves for one or more groups of points."""
     pts = np.asarray(points, dtype=float)
     lbls = np.asarray(labels)
     if pts.shape[1] != 2:
@@ -20,9 +20,6 @@ def polar_gini_curve(
     if len(lbls) != len(pts):
         raise ValueError("Labels length mismatch")
     uniq = np.unique(lbls)
-    if len(uniq) != 2:
-        raise ValueError("Labels must contain exactly two groups")
-
     angles = np.linspace(0.0, 2 * np.pi, num_angles, endpoint=False)
     curves = {label: np.zeros_like(angles) for label in uniq}
 
