@@ -14,6 +14,7 @@ def plot_embedding_and_pgc(
     angles: np.ndarray,
     *curves: np.ndarray,
     cluster_labels: Optional[list[str]] = None,
+    scatter_kwargs: Optional[dict] = None,
 ) -> None:
     """Plot the 2D embedding and PGC side by side."""
     fig = plt.figure(figsize=(15, 6))
@@ -26,6 +27,17 @@ def plot_embedding_and_pgc(
 
     colors = plt.cm.tab10(np.arange(len(unique_labels)))  # type: ignore[attr-defined]
 
+    base_scatter = {
+        "alpha": 0.7,
+        "s": 20,
+        "linewidths": 0,
+    }
+    if scatter_kwargs:
+        base_scatter.update(scatter_kwargs)
+
+    if points.shape[0] > 50000 and "rasterized" not in base_scatter:
+        base_scatter["rasterized"] = True
+
     for i, label in enumerate(unique_labels):
         mask = labels == label
         cluster_points = points[mask]
@@ -34,8 +46,7 @@ def plot_embedding_and_pgc(
             cluster_points[:, 1],
             c=[colors[i]],
             label=cluster_labels[i] if i < len(cluster_labels) else f"Cluster {label}",
-            alpha=0.7,
-            s=20,
+            **base_scatter,
         )
 
     ax1.set_xlabel("X coordinate")
