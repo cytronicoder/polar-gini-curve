@@ -25,7 +25,11 @@ def plot_embedding_and_pgc(
     if cluster_labels is None:
         cluster_labels = [f"Cluster {label}" for label in unique_labels]
 
-    colors = plt.cm.get_cmap("tab10")(np.arange(len(unique_labels)))
+    try:
+        cmap_fn = plt.colormaps.get_cmap  # type: ignore[attr-defined]
+    except AttributeError:
+        cmap_fn = plt.cm.get_cmap  # type: ignore[attr-defined]
+    colors = cmap_fn("tab10")(np.arange(len(unique_labels)))
 
     allowed_keys = {"s", "alpha", "linewidths"}
     base_scatter: dict[str, Any] = {
