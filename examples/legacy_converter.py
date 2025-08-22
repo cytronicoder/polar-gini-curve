@@ -11,11 +11,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-script_dir = Path(__file__).parent.parent
-src_dir = script_dir / "src"
-if src_dir.exists() and str(src_dir) not in sys.path:
-    sys.path.insert(0, str(src_dir))
-
 try:
     from polargini import (
         convert_rsmd_results,
@@ -28,10 +23,6 @@ try:
 except ImportError as e:
     print(f"Error importing polargini: {e}")
     print("Please install with: pip install -e .[legacy]")
-    print(f"Script directory: {script_dir}")
-    print(f"Source directory: {src_dir}")
-    print(f"Current working directory: {Path.cwd()}")
-    print(f"Python path: {sys.path}")
     sys.exit(1)
 
 
@@ -185,7 +176,11 @@ def analyze_clusters(
             plot_labels = pgc_labels
             all_unique_labels = unique_labels
 
-        colors = plt.cm.get_cmap("tab10")(np.linspace(0, 1, len(all_unique_labels)))
+        try:
+            cmap_fn = plt.colormaps.get_cmap  # type: ignore[attr-defined]
+        except AttributeError:
+            cmap_fn = plt.cm.get_cmap  # type: ignore[attr-defined]
+        colors = cmap_fn("tab10")(np.linspace(0, 1, len(all_unique_labels)))
 
         for i, cluster_id in enumerate(all_unique_labels):
             mask = plot_labels == cluster_id
